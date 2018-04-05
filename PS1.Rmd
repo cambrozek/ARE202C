@@ -1,0 +1,26 @@
+---
+title: "AER 202C PS1"
+author: "Charlotte Ambrozek and Emily McGlynn"
+date: "April 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## 1
+
+## 2
+
+## 3
+
+## 4
+
+## 5
+
+## 6
+
+## 7
+
+## 8
