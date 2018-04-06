@@ -59,7 +59,14 @@ There is some evidence that treatment households have higher incomes. The mean v
 ## 3
 We belive income is not independent of household assignment status. This means that although assigment status and selection into treatment are independent, if we regress *income* on *treat* we will still come up with $\hat{\beta}$, a biased estimate of $\beta^{ATT}$. Notice that $treat_i = assign_i \times complier_i$.
 
-Specifically, since $ATT = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=1]$, 
+Specifically, since $ATT = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=1]$, and $E[\hat{\beta}] = E[income_{1,i}|treat_i = 1] - E[income_{0,i}|treat_i = 1] + E[income_{0,i}|treat_i = 1] - E[income_{0,i}|treat_i = 0]$ (with the middle two terms added and subtracted from the standard calculation of $E[\hat{\beta}]$), $\hat{\beta}$ is only unbiased for $\beta^{ATT}$ if $E[income_{0,i}|treat_i = 1] = E[income_{0,i}|treat_i = 0]$. 
+
+```{r test_3, include=FALSE}
+nicarag_2 <- select(filter(nic_rct, assign==1,treat==0), income)
+nicarag_3 <- select(filter(nic_rct, assign==0), income)
+t.test(nicarag_2, nicarag_3)
+```
+Testing the null hypothesis that mean income of assigned but untreated households is equal to mean income of unassigned and untreated households shows that this condition does not hold (p-value = 0.027), thus $\hat{\beta}$ is biased.  
 
 ## 4
 ```{r experiment_regression}
