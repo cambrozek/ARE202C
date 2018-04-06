@@ -14,16 +14,45 @@ knitr::opts_chunk$set(echo = FALSE)
 ## 1
 ```{r data, include = FALSE}
 nic_rct <- read.csv("U:/Courses/202C/PS1/Nicaragua_RCT.csv")
-t.test(complier ~ assign, data = nic_rct, alternative = "two.sided")
+t_1 <- t.test(complier ~ assign, data = nic_rct, alternative = "two.sided")
+mean_complier_assign0 <- t_1$estimate[1]
+mean_complier_assign1 <- t_1$estimate[2]
+t_stat_1 <- t_1$statistic[1]
+p_val_1 <- t_1$p.value
 ```
 If randomization is successful, then $E[complier_i|assign_i = 1]  = E[complier_i|assign_i = 0]$; that is, the probability of selecting into the program does not depend on assignment status. Thus we expect $E[complier_i|assign_i = 1]  - E[complier_i|assign_i = 0 ] = 0$ if randomization is successful.
 
-The mean value of \textit{complier} for treatment group households is 0.5905325; the mean value of \textit{complier} for control group households is 0.6185936.
+The mean value of *complier* for treatment group households is `r mean_complier_assign1`; the mean value of *complier* for control group households is `r mean_complier_assign0`.
 
 A two-sided differences of means t-test in Stata finds that the conditional means are not significantly different.
 
 
 ## 2
+```{r test_2, include = FALSE}
+varlist <- names(nic_rct)[4:9]
+lapply(varlist, function(x){is.na(x)})
+
+##### Now we know that there are no missing values in the data
+
+output_2 <- sapply(varlist, function(x){
+  frm <- paste(x, "assign", sep="~")
+  t <- t.test(formula(frm), data = nic_rct, alternative = "two.sided")
+  mean_0 <- t$estimate[1]
+  mean_1 <- t$estimate[2]
+  t_stat <- t$statistic
+  p_val <- t$p.value
+  t_df <- data.frame(mean_0 = mean_0, mean_1 = mean_1, t_stat = t_stat, p_val = p_val)
+  return(t_df)
+}, USE.NAMES = TRUE)
+
+mean_income_1 = output_2[2,1]
+mean_income_0 = output_2[1,1]
+```
+
+We also expect all control variables (*income, job, age, education, capital*, and *land*) to be uncorrelated with *assign* if randomization is successful.
+\\
+\\
+There is some evidence that treatment households have higher incomes. The mean value of *income* for treatment group households is `r mean_income_1`; the mean value of *income* for control group households is `r mean_income_0`. A two-sided differences of means t-test (assuming unequal variances) in Stata rejects the null hypothesis that the conditional means are equal.
 
 ## 3
 
