@@ -59,14 +59,27 @@ There is some evidence that treatment households have higher incomes. The mean v
 ## 3
 We belive income is not independent of household assignment status. This means that although assigment status and selection into treatment are independent, if we regress *income* on *treat* we will still come up with $\hat{\beta}$, a biased estimate of $\beta^{ATT}$. Notice that $treat_i = assign_i \times complier_i$.
 
-Specifically, since $ATT = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=1]$, where numerical subscripts represent assignment to treatment and control respectively, $= E[income_{1,i}|treat_i=1] + E[income_{1,i}|treat_i=0] - E[income_{0,i}|treat_i = 1] - E[income_{0,i}|treat_i =0]$
+Specifically, since $ATT = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=1]$, 
 
 ## 4
+```{r experiment_regression}
+output_4 <- lm(income ~ assign, data = nic_rct)
+beta_itt <- output_4$coefficients[2]
+```
 
 ## 5
 
 ## 6
+```{r subset_regression}
+subset_nic_rct <-  nic_rct[nic_rct$assign != 0,]
+```
 
 ## 7
+```{r indicators}
+subset_nic_rct <- as.tibble(subset_nic_rct)
+subset_nic_rct <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 =   ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
+
+output_7 <- lm(income ~ tj1 + tj2 + tj3, data = subset_nic_rct)
+```
 
 ## 8
