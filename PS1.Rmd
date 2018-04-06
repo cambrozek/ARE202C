@@ -6,10 +6,22 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## 1
+```{r data, include = FALSE}
+nic_rct <- read.csv("U:/Courses/202C/PS1/Nicaragua_RCT.csv")
+t.test(complier ~ assign, data = nic_rct, alternative = "two.sided")
+```
+If randomization is successful, then $E[complier_i|assign_i = 1]  = E[complier_i|assign_i = 0]$; that is, the probability of selecting into the program does not depend on assignment status. Thus we expect $E[complier_i|assign_i = 1]  - E[complier_i|assign_i = 0 ] = 0$ if randomization is successful.
+
+The mean value of \textit{complier} for treatment group households is 0.5905325; the mean value of \textit{complier} for control group households is 0.6185936.
+
+A two-sided differences of means t-test in Stata finds that the conditional means are not significantly different.
+
 
 ## 2
 
