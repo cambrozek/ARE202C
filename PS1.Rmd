@@ -71,7 +71,20 @@ beta_itt <- output_4$coefficients[2]
 
 ## 6
 ```{r subset_regression}
-subset_nic_rct <-  nic_rct[nic_rct$assign != 0,]
+subset_nic_rct <-  nic_rct[nic_rct$land <= mean(nic_rct$land),]
+```
+
+```{r output_6}
+output_2 <- sapply(varlist, function(x){
+  frm <- paste(x, "treat", sep="~")
+  t <- t.test(formula(frm), data = subset_nic_rct, alternative = "two.sided")
+  mean_0 <- t$estimate[1]
+  mean_1 <- t$estimate[2]
+  t_stat <- t$statistic
+  p_val <- t$p.value
+  t_df <- data.frame(mean_0 = mean_0, mean_1 = mean_1, t_stat = t_stat, p_val = p_val)
+  return(t_df)
+}, USE.NAMES = TRUE)
 ```
 
 ## 7
