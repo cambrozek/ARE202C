@@ -2,7 +2,9 @@
 title: "AER 202C PS1"
 author: "Charlotte Ambrozek and Emily McGlynn"
 date: "April 5, 2018"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,8 +14,8 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## 1
-```{r data, include = FALSE}
-nic_rct <- read.csv("U:/Courses/202C/PS1/Nicaragua_RCT.csv")
+```{r data, include=FALSE}
+nic_rct <- read.csv("Nicaragua_RCT.csv")
 t_1 <- t.test(complier ~ assign, data = nic_rct, alternative = "two.sided")
 mean_complier_assign0 <- t_1$estimate[1]
 mean_complier_assign1 <- t_1$estimate[2]
@@ -26,12 +28,12 @@ If randomization is successful, then $E[complier_i|assign_i = 1]  = E[complier_i
 The mean value of *complier* for treatment group households is `r mean_complier_assign1`; the mean value of *complier* for control group households is `r mean_complier_assign0`.
 
 
-A two-sided differences of means t-test in Stata finds that the conditional means are not significantly different.
+A two-sided differences of means t-test in Stata finds that the conditional means are not significantly different (p = `r p_val_1`).
 
 
 ## 2
-```{r test_2, include = FALSE}
-varlist <- names(nic_rct)[4:9]
+```{r test_2, include=FALSE}
+varlist <- names(nic_rct)[5:9]
 lapply(varlist, function(x){is.na(x)})
 
 ##### Now we know that there are no missing values in the data
@@ -51,48 +53,125 @@ mean_income_1 = output_2[2,1]
 mean_income_0 = output_2[1,1]
 ```
 
-We also expect all control variables (*income, job, age, education, capital*, and *land*) to be uncorrelated with *assign* if randomization is successful.
+We also expect all control variables (*job, age, education, capital*, and *land*) to be uncorrelated with *assign* if randomization is successful. We can see from the table that all means of control variables for assigned vs. not assigned are not statistically different, thus we argue that the randomization has been successful with respect to assignment. 
 
-
-There is some evidence that treatment households have higher incomes. The mean value of *income* for treatment group households is `r mean_income_1`; the mean value of *income* for control group households is `r mean_income_0`. A two-sided differences of means t-test (assuming unequal variances) in Stata rejects the null hypothesis that the conditional means are equal.
 
 ## 3
-We belive income is not independent of household assignment status. This means that although assigment status and selection into treatment are independent, if we regress *income* on *treat* we will still come up with $\hat{\beta}$, a biased estimate of $\beta^{ATT}$. Notice that $treat_i = assign_i \times complier_i$.
+Note that $treat_i = assign_i \times complier_i$. Randomization appears to have been successful with respect to assignment, but since only households that request treatment (complier = 1) will receive treatment, treatment may not be independent of income. This means, if we regress *income* on *treat* we generate $\hat{\beta}$, a biased estimate of $\beta^{ATT}$. 
 
-Specifically, since $ATT = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=1]$, 
+We argue this is the case through the following. We define $\beta^{ATT} = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=1]$. Note that the second term will not be observed. We estimate $\hat{\beta}$ with our data with $\hat{E}[income_{1,i}|treat_i=1] - \hat{E}[income_{0,i}|treat_i=0]$. Thus $E[\hat{\beta}] = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=0] = E[income_{1,i}|treat_i=1] - E[income_{0,i}|treat_i=1] + E[income_{0,i}|treat_i=1] - E[income_{0,i}|treat_i=0]$. Note that the middle two terms (added and subtracted from the original equation for $\hat{\beta}$) is the unobservable term. The first two terms are equal to $\beta^{ATT}$. The second two terms must cancel for $\hat{\beta}$ to be unbiased. 
+
+```{r echo=FALSE}
+nicarag_2 <- select(filter(nic_rct, complier==1,treat==0), income)
+nicarag_3 <- select(filter(nic_rct, complier==0,treat==0), income)
+t_stat_2 <- t.test(nicarag_2, nicarag_3)
+p_val_2 <- t_stat_2$p.value
+select_1 <- t_stat_2$estimate[1]
+select_2 <- t_stat_2$estimate[2]
+bias_ATT <- select_1 - select_2
+```
+
+To estimate the presence of selection bias, we estimate $E[income_{0,i}|treat_i=1]$ using the mean income of households that requested treatment but did not receive it (complier = 1, treat = 0) and estimate $E[income_{0,i}|treat_i=0]$ using mean income of households that did not request treatment and did not receive it (complier = 0, treat = 0). A two-way t-test finds that $p =$ `r p_val_1`, which indicates they are likely different. Thus we expect there to be some selection bias in treatment application.
 
 ## 4
-```{r experiment_regression}
+```{r experiment_regression, echo=FALSE}
 output_4 <- lm(income ~ assign, data = nic_rct)
 beta_itt <- output_4$coefficients[2]
 ```
 
+ITT is $E[income_1/0, i | assign_i = 1] -  E[income_0, i | assign_i = 0]$, that is, the expected income of anyone who receives assignment, whether they're treated or not minus the expected income of anyone who does not receive assignment (thus this will only be non-treated income). We find $\hat{\beta}^{ITT}$ = `r beta_itt` = $\hat{E}E[income_1/0, i | assign_i = 1] - \hat{E}[income_0, i | assign_i = 0]$. But $E[\hat{\beta}^{ITT}]$ is simply $\beta^{ITT}$ - we have data to directly estimate all terms for $\beta^{ITT}$, and thus our sample estimate will be unbiased for the true sample average ITT.   
+
 ## 5
+```{r experiment_regression_2, echo=FALSE}
+output_5 <- lm(income ~ treat, data = nic_rct)
+beta_att <- output_5$coefficients[2]
+true_beta_att <- beta_att - bias_ATT 
+```
+We find that the true $\beta^{ATT}$ is likely to be higher than $\hat{\beta}^{ITT}$. We estimate this directly by finding $\hat{\beta}^{ATT}$ = `r beta_att` and subtracting the bias we estimated for question 3, where $bias^{ATT}$ = `r bias_ATT`. Thus our estimated $\widehat{\beta^{ATT}}$ = `r true_beta_att`, whereas $\hat{\beta}^{ITT}$ = `r beta_itt`. 
+
+This makes sense because $\beta^{ATT}$ represents the effect of actual treatment, whereas $\beta^{ITT}$ (for which $\hat{\beta}^{ITT}$ is unbiased) represents what could be interpreted as a more "psychological" effect of being assigned for treatment but not necessarily treated. If we expect the treatment to have a positive effect on income then $\beta^{ATT} > \beta^{ITT}$ makes sense. 
 
 ## 6
-```{r subset_regression}
-subset_nic_rct <-  nic_rct[nic_rct$land <= mean(nic_rct$land),]
+```{r subset_regression, echo=FALSE}
+subset_nic_rct <-  nic_rct[nic_rct$land <= 47.93,]
+nicarag_4 <- select(filter(subset_nic_rct, complier==1,treat==0), income)
+nicarag_5 <- select(filter(subset_nic_rct, complier==0,treat==0), income)
+t_stat_3 <- t.test(nicarag_4, nicarag_5)
+p_val_3 <- t_stat_3$p.value
+output_6 <- lm(income ~ treat, data = subset_nic_rct)
+beta_att_ub <- output_6$coefficients[2]
+output_7 <- lm(income ~ assign, data = subset_nic_rct)
+beta_itt_ub <- output_7$coefficients[2]
 ```
+We find that taking the subset of households with land holding less than the 75th percentile (47.93 manzanas) would allow us to generate an unbiased estimate of ATT. We estimate, similarly to question 3, the statistical difference between household income that requested treatment but did not receive it, and household income that did not request treatment and thus did not receive it. Conditioning this calculation on $land \leq 47.93$, we find $p =$ `r p_val_3`, indicating no significant difference in mean income. Thus we believe subsetting on this set of households would produce an unbiased estimate of $\beta^{ATT}$. This makes sense because with respect to land ownership there are several very large outliers - for example the maximum land size is nearly 5 times the median.
 
-```{r output_6}
-output_2 <- sapply(varlist, function(x){
-  frm <- paste(x, "treat", sep="~")
-  t <- t.test(formula(frm), data = subset_nic_rct, alternative = "two.sided")
-  mean_0 <- t$estimate[1]
-  mean_1 <- t$estimate[2]
-  t_stat <- t$statistic
-  p_val <- t$p.value
-  t_df <- data.frame(mean_0 = mean_0, mean_1 = mean_1, t_stat = t_stat, p_val = p_val)
-  return(t_df)
-}, USE.NAMES = TRUE)
-```
+Running the OLS regression on this subset of households, we find $\hat{\beta}^{ATT} =$ `r beta_att_ub`. Note that, interestingly, if we run the OLS regression to calculate ITT, we find $\hat{\beta}^{ITT} =$ `r beta_itt_ub`, virtually the same.   
+
 
 ## 7
-```{r indicators}
-subset_nic_rct <- as.tibble(subset_nic_rct)
-subset_nic_rct <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 =   ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
+```{r indicators, echo=FALSE}
+install.packages("xtable")
+library(xtable)
+subset_nic_rct_2 <- as.tibble(subset_nic_rct)
+subset_nic_rct_2 <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 =   ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
 
-output_7 <- lm(income ~ tj1 + tj2 + tj3, data = subset_nic_rct)
+output_8 <- lm(income ~ tj1 + tj2 + tj3, data = subset_nic_rct)
+output_9 <- filter(xtable(output_8), Estimate <1890)
+row.names(output_9) <- c("Beta_1", "Beta_2", "Beta_3")
+kable(output_9, digits = 3)
+
+subset_nic_rct_2 <-  nic_rct[nic_rct$land <= 47.93,]
+nicarag_6 <- as.data.frame(select(filter(subset_nic_rct_2, complier==1,treat==0,job==1), income))
+nicarag_7 <- as.data.frame(select(filter(subset_nic_rct_2, complier==0,treat==0,job==1), income))
+t_stat_4 <- t.test(nicarag_6, nicarag_7)
+p_val_4 <- t_stat_4$p.value
+
+nicarag_8 <- as.data.frame(select(filter(subset_nic_rct_2, complier==1,treat==0,job==2), income))
+nicarag_9 <- as.data.frame(select(filter(subset_nic_rct_2, complier==0,treat==0,job==2), income))
+t_stat_5 <- t.test(nicarag_8, nicarag_9)
+p_val_5 <- t_stat_5$p.value
+
+nicarag_10 <- as.data.frame(select(filter(subset_nic_rct_2, complier==1,treat==0,job==3), income))
+nicarag_11 <- as.data.frame(select(filter(subset_nic_rct_2, complier==0,treat==0,job==3), income))
+t_stat_6 <- t.test(nicarag_10, nicarag_11)
+p_val_6 <- t_stat_6$p.value
 ```
 
+While we found that on the small land-holder subset treatment was independent of income, this is not guaranteed to be the case within each job. In fact, testing for bias using a similar procedure to problems 3 and 6, we find that there is potential for bias for cattle ranchers ($p =$ `r p_val_4`), while for grain and yuca farmers there is little evidence for bias ($p = $ `r p_val_5`, `r p_val_6`, respectively). 
+
 ## 8
+```{r indicators, echo=FALSE, message=FALSE}
+install.packages("car")
+library(car)
+subset_nic_rct_3 <-  nic_rct[nic_rct$land <= 33.86,]
+nicarag_12 <- as.data.frame(select(filter(subset_nic_rct_3, complier==1,treat==0,job==1), income))
+nicarag_13 <- as.data.frame(select(filter(subset_nic_rct_3, complier==0,treat==0,job==1), income))
+t_stat_7 <- t.test(nicarag_12, nicarag_13)
+p_val_7 <- t_stat_7$p.value
+
+nicarag_14 <- as.data.frame(select(filter(subset_nic_rct_3, complier==1,treat==0,job==2), income))
+nicarag_15 <- as.data.frame(select(filter(subset_nic_rct_3, complier==0,treat==0,job==2), income))
+t_stat_8 <- t.test(nicarag_14, nicarag_15)
+p_val_8 <- t_stat_8$p.value
+
+nicarag_16 <- as.data.frame(select(filter(subset_nic_rct_3, complier==1,treat==0,job==3), income))
+nicarag_17 <- as.data.frame(select(filter(subset_nic_rct_3, complier==0,treat==0,job==3), income))
+t_stat_9 <- t.test(nicarag_16, nicarag_17)
+p_val_9 <- t_stat_9$p.value
+
+subset_nic_rct_3_t <- as.tibble(subset_nic_rct_3)
+subset_nic_rct_3_t <- mutate(subset_nic_rct_3_t, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 =   ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
+output_10 <- lm(income ~ tj1 + tj2 + tj3, data = subset_nic_rct_3_t)
+output_11 <- filter(xtable(output_10), Estimate <1630)
+row.names(output_11) <- c("Beta_1", "Beta_2", "Beta_3")
+kable(output_11, digits = 3)
+
+output_12 <- linearHypothesis(output_10, "tj1 = tj2")
+output_13 <- linearHypothesis(output_10, "tj2 = tj3")
+output_14 <- linearHypothesis(output_10, "tj1 = tj3")
+p_val_10 <- output_12$p.value
+p_val_11 <- output_13$p.value
+p_val_12 <- output_14$p.value
+```
+
+By slightly decreasing the subset of households analysed to only land holding below the median (33.86 manzanas), we can reject evidence of bias ($p =$ `r p_val_7`, `r p_val_8`, `r p_val_9`, for cattle, grain, yuca respectively).  In the table we can see that there is a significant effect of treatment across all 3 types of producers, and that the effect is only positive for cattle ranchers. Testing the hypotheses that $\hat{\beta}_1 = \hat{\beta}_2$, $\hat{\beta}_2 = \hat{\beta}_3$, and $\hat{\beta}_1 = \hat{\beta}_3$, we can reject all three ($p = $ `r p_val_10`, `r p_val_11`, `r p_val_12`, respectively). Thus we find evidence of heterogeneous effects of treatment across different categories of producers. 
