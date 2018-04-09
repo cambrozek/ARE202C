@@ -10,6 +10,8 @@ output:
 ```{r setup, include=FALSE}
 library(knitr)
 library(tidyverse)
+library(xtable)
+library(car)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -110,12 +112,10 @@ Running the OLS regression on this subset of households, we find $\hat{\beta}^{A
 
 ## 7
 ```{r indicators, echo=FALSE}
-install.packages("xtable")
-library(xtable)
 subset_nic_rct_2 <- as.tibble(subset_nic_rct)
 subset_nic_rct_2 <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 =   ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
 
-output_8 <- lm(income ~ tj1 + tj2 + tj3, data = subset_nic_rct)
+output_8 <- lm(income ~ tj1 + tj2 + tj3, data = subset_nic_rct_2)
 output_9 <- filter(xtable(output_8), Estimate <1890)
 row.names(output_9) <- c("Beta_1", "Beta_2", "Beta_3")
 kable(output_9, digits = 3)
@@ -141,8 +141,6 @@ While we found that on the small land-holder subset treatment was independent of
 
 ## 8
 ```{r indicators, echo=FALSE, message=FALSE}
-install.packages("car")
-library(car)
 subset_nic_rct_3 <-  nic_rct[nic_rct$land <= 33.86,]
 nicarag_12 <- as.data.frame(select(filter(subset_nic_rct_3, complier==1,treat==0,job==1), income))
 nicarag_13 <- as.data.frame(select(filter(subset_nic_rct_3, complier==0,treat==0,job==1), income))
@@ -174,4 +172,4 @@ p_val_11 <- output_13$p.value
 p_val_12 <- output_14$p.value
 ```
 
-By slightly decreasing the subset of households analysed to only land holding below the median (33.86 manzanas), we can reject evidence of bias ($p =$ `r p_val_7`, `r p_val_8`, `r p_val_9`, for cattle, grain, yuca respectively).  In the table we can see that there is a significant effect of treatment across all 3 types of producers, and that the effect is only positive for cattle ranchers. Testing the hypotheses that $\hat{\beta}_1 = \hat{\beta}_2$, $\hat{\beta}_2 = \hat{\beta}_3$, and $\hat{\beta}_1 = \hat{\beta}_3$, we can reject all three ($p = $ `r p_val_10`, `r p_val_11`, `r p_val_12`, respectively). Thus we find evidence of heterogeneous effects of treatment across different categories of producers. 
+By slightly decreasing the subset of households analysed to only land holding below the median (33.86 manzanas), we can reject evidence of bias ($p =$ `r p_val_7`, `r p_val_8`, `r p_val_9`, for cattle, grain, yuca respectively).  In the table we can see that there is a significant effect of treatment across all 3 types of producers, and that the effect is only positive for cattle ranchers. Testing the hypotheses that $ \hat{\beta}_1 = \hat{\beta}_2$, $\hat{\beta}_2 = \hat{\beta}_3$, and $\hat{\beta}_1 = \hat{\beta}_3$, we can reject all three ($p = $ `r p_val_10`, `r p_val_11`, `r p_val_12`, respectively). Thus we find evidence of heterogeneous effects of treatment across different categories of producers. 
