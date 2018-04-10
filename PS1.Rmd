@@ -111,7 +111,7 @@ Running the OLS regression on this subset of households, we find $\hat{\beta}^{A
 
 
 ## 7
-```{r indicators, echo=FALSE}
+```{r indicator, echo=FALSE}
 subset_nic_rct_2 <- as.tibble(subset_nic_rct)
 subset_nic_rct_2 <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 =   ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
 
