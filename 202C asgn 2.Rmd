@@ -68,7 +68,7 @@ Again we find that land is the only variable with a significant effect on reques
 
 
 Charlotte's take:
-Again we find that land is the only variable with a significant effect on request for treatment. Notice that this is a probit model so that these coefficients don't have clear interpretations as marginal effects of right hand side variables on compliance as in the linear model, so we can't interpret the same way we did in 2. 
+Again we find that land is the only variable with a significant effect on request for treatment. Notice that this is a probit model so that these coefficients don't have clear interpretations as marginal effects of right hand side variables on probability of compliance as in the linear model, so we can't interpret the same way we did in 2. 
 
 ##4
 We posit that the answers to questions 2 and 3 provide statistically significant evidence that land holding size has an effect on likelihood of requesting treatment. The coefficients of land on expected compliance rate are significant across a number of model specifications, providing evidence of robustness. It is more difficult to say whether land holding size directly causes a larger likelihood of compliance or whether this variable is correlated with another, unobserved factor that is more directly attributable to a landowner's inclination to accept compliance. For example, large land owners may be more likely to be entrepreneurial, taking risks and interested in learning new information that can help their business. This likely has something to do with business savvy, high IQ, previous successes with experimentation, all of which could lead to higher land ownership.   
@@ -80,10 +80,8 @@ We posit that the answers to questions 2 and 3 provide statistically significant
 output_7 <- lm(complier ~ age*j2 + age*j3 + education*j2 + education*j3 + capital*j2 + capital*j3 + land*j2 + land*j3, data=subset_nic_rct_2)
 output_8 <- glm(complier ~ age*j2 + age*j3 + education*j2 + education*j3 + capital*j2 + capital*j3 + land*j2 + land*j3, data=subset_nic_rct_2, family=binomial(link="probit"))
 
-output_9 <- lm(complier ~ age*j1 + age*j3 + education*j1 + education*j3 + capital*j1 + capital*j3 + land*j1 + land*j3, data=subset_nic_rct_2)
-output_10 <- glm(complier ~ age*j1 + age*j3 + education*j1 + education*j3 + capital*j1 + capital*j3 + land*j1 + land*j3, data=subset_nic_rct_2, family=binomial(link="probit"))
 
-q6 <- sjt.lm(output_7, output_8, output_9, output_10, robust = TRUE, p.numeric = TRUE)
+q6 <- sjt.lm(output_7, output_8, robust = TRUE, p.numeric = TRUE)
 
 xtabs(land~job,nic_rct)
 ```
@@ -91,7 +89,10 @@ Results from these models show that there is a small but significant negative ef
 
 The results lead us to believe that the land holding effects are driven by cattle farmers. Indeed, rerunning the results with grain farmers as the reference group rather than cattle farmers, we find that the land effect goes away and instead being a cattle farmer substantially decreases the likelihood of participation; however, conditional on being a cattle farmer, increasing land holdings further increases participation.
 
+So we find some evidence of heterogeneity in the pattern of selection - probability of compliance moves in different directions as land holdings increase conditional on farmer type.
+
 `r q6`
+
 ##7
 ````{r q_7, include=FALSE, message = FALSE, warning = FALSE}
 
