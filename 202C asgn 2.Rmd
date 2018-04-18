@@ -5,64 +5,99 @@ date: "April 17, 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-install.packages("sjPlot")
+```{r setup, include=FALSE, message = FALSE}
 library(knitr)
 library(tidyverse)
 library(sjPlot)
+library(MatchIt)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## 1
 
-```{r setup, include=FALSE, message= FALSE}
-nic_rct <- read.csv("Nicaragua_RCT.csv")
+```{r q_1, include=FALSE, message= FALSE}
+nic_rct <- read_csv("U:/Courses/202C/PS2/Nicaragua_RCT.csv")
 subset_nic_rct <-  nic_rct[nic_rct$assign == 1,]
 
 output_1 <- lm(income ~ complier, data = subset_nic_rct)
 
-subset_nic_rct_2 <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 =   ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
+subset_nic_rct_2 <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 = ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
 
 output_2 <- lm(income ~ j2+j3+tj1+tj2+tj3, data = subset_nic_rct_2)
 
-sjt.lm(output_1, output_2)
+q1 <- sjt.lm(output_1, output_2, robust = TRUE)
 ```
 
 
-Running the regressions again, we find $\hat{\beta}^{ATT} = 925.69$, $\hat{\beta}_1^{ATT} = 1268.69$, $\hat{\beta}_2^{ATT} = 348.32$, $\hat{\beta}_3^{ATT} = 794.49$. These coefficients are larger than for the observations conditioned on $complier_i = 1$. This seems to indicate that when conditioning on individuals that request treatment, there is still some explanation of the treatment effect remaining in the error terms of equations (1) and (2). This could be explained by the fact that conditioning on compliance shows the difference between random assignment to treatment among individuals who all requested treatment, while conditioning on assignment shows the effect of treatment between anyone who requested treatment and was assigned treatment compared to those who were assigned treatment and did not request treatment. That is, we are more likely to be witnessing the effect of treatment across different "types" of people in the second regression, because we see both those who requested treatment and those that did not (who might reasonably be distinguished by ex ante income, capital, etc.).      
+Running the regressions again, we find $\hat{\beta}^{ATT} =$ `r output_1$coefficients[1]`, $\hat{\beta}_1^{ATT} =$ `r output_2$coefficients[4]`, $\hat{\beta}_2^{ATT} =$ `r output_2$coefficients[5]`, $\hat{\beta}_3^{ATT} =$ `r output_2$coefficients[6]`. These coefficients are larger than for the observations conditioned on $complier_i = 1$. This seems to indicate that when conditioning on individuals that request treatment, there is still some explanation of the treatment effect remaining in the error terms of equations (1) and (2). This could be explained by the fact that conditioning on compliance shows the difference between random assignment to treatment among individuals who all requested treatment, while conditioning on assignment shows the effect of treatment between anyone who requested treatment and was assigned treatment compared to those who were assigned treatment and did not request treatment. In this case, the bias from this selection effect is positive (treatment has a larger effect on income when not controlling for the effects of compliance/non-compliance). That is, we are more likely to be witnessing the effect of treatment across different "types" of people in the second regression, because we see both those who requested treatment and those that did not (who might reasonably be distinguished by ex ante income, capital, etc.).
+
+`r q1`
 
 ## 2
-```{r setup, include=FALSE, message= FALSE}
+```{r q_2, include=FALSE, message= FALSE}
 output_3 <- lm(complier ~ age + education + capital + land + j2 + j3, data=subset_nic_rct_2)
 
-sjt.lm(output_3, digits.est = 4, digits.ci = 4)
+q2 <- sjt.lm(output_3, digits.est = 4, digits.ci = 4)
 ```
 A linear probability model for treatment (conditioning the data on $assign_i=1$, we regress complier on age, education, capital, land, job 2, and job 3). Each coefficient in this regression represents the marginal effect of that variable on the probability that $complier_i=1$. Thus for a positive coefficient there is evidence that, for example, as age increases, the probability of compliance being 1 increases.
 
 The results of this regression indicate that none of the variables significantly influence compliance except for land. While the magnitude of effect is still small, it is significantly non-zero and positive. This is evidence that larger land holders are more likely to request treatment.
 
+`r q2`
+
 ##3
-```{r setup, include=FALSE, message= FALSE, warning = FALSE}
+```{r q_3, include=FALSE, message= FALSE, warning = FALSE}
 output_4 <- glm(complier ~ age + education + capital + land + j2 + j3, data=subset_nic_rct_2, family=binomial(link="probit"))
 
-subset_nic_rct_3 <- mutate(subset_nic_rct_2, land_2 = land^2, land_3 = land^3, land_4 = land^4)
-output_5 <- glm(complier ~ age + education + capital + land + land_2 + j2 + j3, data=subset_nic_rct_3, family=binomial(link="probit"))
+#subset_nic_rct_3 <- mutate(subset_nic_rct_2, land_2 = land^2, land_3 = land^3, land_4 = land^4)
+#output_5 <- glm(complier ~ age + education + capital + land + land_2 + j2 + j3, data=subset_nic_rct_3, family=binomial(link="probit"))
 
-output_6 <- glm(complier ~ age + education + capital + land + land_4 + j2 + j3, data=subset_nic_rct_3, family=binomial(link="probit"))
+#output_6 <- glm(complier ~ age + education + capital + land + land_4 + j2 + j3, data=subset_nic_rct_3, family=binomial(link="probit"))
 
-sjt.glm(output_4, output_5, output_6, exp.coef = FALSE, digits.est = 4, digits.ci = 4)
+sjt.glm(output_4, exp.coef = FALSE, digits.est = 4, digits.ci = 4)
 
-subset_nic_rct_4 <- mutate(subset_nic_rct_3, pcomp_1 = fitted(output_4), pcomp_2 = fitted(output_5), pcomp_3 = fitted(output_6))
+#subset_nic_rct_4 <- mutate(subset_nic_rct_3, pcomp_1 = fitted(output_4), pcomp_2 = fitted(output_5), pcomp_3 = fitted(output_6))
 
 
-plot(y = subset_nic_rct_4$land, x = subset_nic_rct_4$pcomp_1)
-plot(y = subset_nic_rct_4$land, x = subset_nic_rct_4$pcomp_2)
-plot(y = subset_nic_rct_4$land, x = subset_nic_rct_4$pcomp_3)
+#q3_p1 <- plot(y = subset_nic_rct_4$land, x = subset_nic_rct_4$pcomp_1)
+#q3_p2 <- plot(y = subset_nic_rct_4$land, x = subset_nic_rct_4$pcomp_2)
+#q3_p3 <- plot(y = subset_nic_rct_4$land, x = subset_nic_rct_4$pcomp_3)
 ```
 
-Again we find that land is the only variable with a significant effect on request for treatment. When we add a square term for land, both land terms lose significance. Adding higher exponential terms improves the linearity between land and compliance and also returns significance to the linear land term. This indicates that under the probit model there does not appear to be a strictly linear relationship between land size and likelihood of compliance, particularly for large landholders, for whom likelihood of compliance is especially high.   
+Again we find that land is the only variable with a significant effect on request for treatment. When we add a square term for land, both land terms lose significance. Adding higher exponential terms improves the linearity between land and compliance and also returns significance to the linear land term. This indicates that under the probit model there does not appear to be a strictly linear relationship between land size and likelihood of compliance, particularly for large landholders, for whom likelihood of compliance is especially high.
+
+
+Charlotte's take:
+Again we find that land is the only variable with a significant effect on request for treatment. Notice that this is a probit model so that these coefficients don't have clear interpretations as marginal effects of right hand side variables on compliance as in the linear model, so we can't interpret the same way we did in 2. 
 
 ##4
 We posit that the answers to questions 2 and 3 provide statistically significant evidence that land holding size has an effect on likelihood of requesting treatment. The coefficients of land on expected compliance rate are significant across a number of model specifications, providing evidence of robustness. It is more difficult to say whether land holding size directly causes a larger likelihood of compliance or whether this variable is correlated with another, unobserved factor that is more directly attributable to a landowner's inclination to accept compliance. For example, large land owners may be more likely to be entrepreneurial, taking risks and interested in learning new information that can help their business. This likely has something to do with business savvy, high IQ, previous successes with experimentation, all of which could lead to higher land ownership.   
 
 ##5
+
+##6
+````{r q_6, include=FALSE, message = FALSE}
+output_7 <- lm(complier ~ age*j2 + age*j3 + education*j2 + education*j3 + capital*j2 + capital*j3 + land*j2 + land*j3, data=subset_nic_rct_2)
+output_8 <- glm(complier ~ age*j2 + age*j3 + education*j2 + education*j3 + capital*j2 + capital*j3 + land*j2 + land*j3, data=subset_nic_rct_2, family=binomial(link="probit"))
+
+output_9 <- lm(complier ~ age*j1 + age*j3 + education*j1 + education*j3 + capital*j1 + capital*j3 + land*j1 + land*j3, data=subset_nic_rct_2)
+output_10 <- glm(complier ~ age*j1 + age*j3 + education*j1 + education*j3 + capital*j1 + capital*j3 + land*j1 + land*j3, data=subset_nic_rct_2, family=binomial(link="probit"))
+
+q6 <- sjt.lm(output_7, output_8, output_9, output_10, robust = TRUE, p.numeric = TRUE)
+
+xtabs(land~job,nic_rct)
+```
+Results from these models show that there is a small but significant negative effect of increasing land holdings on participation in treatment conditional on being a yuca or grain farmer (relative to cattle farmers). However, being a grain farmer *increases* likelihood of participation. As noted before, there is a small, significant positive effect of land holdings on participation.
+
+The results lead us to believe that the land holding effects are driven by cattle farmers. Indeed, rerunning the results with grain farmers as the reference group rather than cattle farmers, we find that the land effect goes away and instead being a cattle farmer substantially decreases the likelihood of participation; however, conditional on being a cattle farmer, increasing land holdings further increases participation.
+
+`r q6`
+##7
+````{r q_7, include=FALSE, message = FALSE, warning = FALSE}
+
+```
+
+##8
+````{r q_8, include=FALSE, message = FALSE, warning = FALSE}
+
+```
