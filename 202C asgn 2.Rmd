@@ -66,16 +66,20 @@ sjt.glm(output_4, exp.coef = FALSE, digits.est = 4, digits.ci = 4)
 #q3_p3 <- plot(y = subset_nic_rct_4$land, x = subset_nic_rct_4$pcomp_3)
 ```
 
-Again we find that land is the only variable with a significant effect on request for treatment. When we add a square term for land, both land terms lose significance. Adding higher exponential terms improves the linearity between land and compliance and also returns significance to the linear land term. This indicates that under the probit model there does not appear to be a strictly linear relationship between land size and likelihood of compliance, particularly for large landholders, for whom likelihood of compliance is especially high.
-
-
-Charlotte's take:
-Again we find that land is the only variable with a significant effect on request for treatment. Notice that this is a probit model so that these coefficients don't have clear interpretations as marginal effects of right hand side variables on probability of compliance as in the linear model, so we can't interpret the same way we did in 2. 
+Again we find that land is the only variable with a significant effect on request for treatment. Notice that this is a probit model, wherein the model is fitting the data to a non-linear cumulative distribution function. Thus the probit coefficients don't have clear interpretations as marginal effects of right hand side variables on probability of compliance as in the linear model, so we can't interpret the same way we did in 2. 
 
 ##4
 We posit that the answers to questions 2 and 3 provide statistically significant evidence that land holding size has an effect on likelihood of requesting treatment. The coefficients of land on expected compliance rate are significant across a number of model specifications, providing evidence of robustness. It is more difficult to say whether land holding size directly causes a larger likelihood of compliance or whether this variable is correlated with another, unobserved factor that is more directly attributable to a landowner's inclination to accept compliance. For example, large land owners may be more likely to be entrepreneurial, taking risks and interested in learning new information that can help their business. This likely has something to do with business savvy, high IQ, previous successes with experimentation, all of which could lead to higher land ownership.   
 
 ##5
+
+```{r q_5, include=FALSE, message= FALSE, warning = FALSE}
+income <- nic_rct$income
+land <- nic_rct$land
+cov <- cov(income, land)
+cor <- cor(income, land)
+```
+Positing that land is the source of positive selection bias indicates the covariance of land and income would be positive - that is, we expect individuals with larger land holdings to also have higher income, and thus if larger land holding is correlated with request for treatment, we have a larger likelihood of treated individuals to have higher income ex ante, which biases our question of how treatment affects income. Looking at the data we see that in fact the correlation (and thus covariance) is positive, `r cor`. 
 
 ##6
 ````{r q_6, include=FALSE, message = FALSE}
@@ -96,9 +100,37 @@ So we find some evidence of heterogeneity in the pattern of selection - probabil
 `r q6`
 
 ##7
-````{r q_7, include=FALSE, message = FALSE, warning = FALSE}
+```{r q_7, include=FALSE, message = FALSE, warning = FALSE}
+subset_nic_rct_5 <-  nic_rct[nic_rct$assign == 1 & nic_rct$job == 1,]
+subset_nic_rct_6 <-  nic_rct[nic_rct$assign == 1 & nic_rct$job == 2,]
+subset_nic_rct_7 <-  nic_rct[nic_rct$assign == 1 & nic_rct$job == 3,]
+
+lm_cattle_1 <- lm(income ~ complier + age + education + capital + land, data = subset_nic_rct_5)
+lm_cattle_2 <- lm(income ~ complier + education + capital + land, data = subset_nic_rct_5)
+lm_cattle_3 <- lm(income ~ complier + age + capital + land, data = subset_nic_rct_5)
+lm_cattle_4 <- lm(income ~ complier + age + education + land, data = subset_nic_rct_5)
+lm_cattle_5 <- lm(income ~ complier + age + education + capital, data = subset_nic_rct_5)
+
+sjt.lm(lm_cattle_1, lm_cattle_2, lm_cattle_3, lm_cattle_4, lm_cattle_5, show.header = TRUE, string.dv = "CATTLE", p.numeric = FALSE, show.ci = FALSE, digits.est = 4, digits.ci = 4)
+
+lm_grain_1 <- lm(income ~ complier + age + education + capital + land, data = subset_nic_rct_6)
+lm_grain_2 <- lm(income ~ complier + education + capital + land, data = subset_nic_rct_6)
+lm_grain_3 <- lm(income ~ complier + age + capital + land, data = subset_nic_rct_6)
+lm_grain_4 <- lm(income ~ complier + age + education + land, data = subset_nic_rct_6)
+lm_grain_5 <- lm(income ~ complier + age + education + capital, data = subset_nic_rct_6)
+
+sjt.lm(lm_grain_1, lm_grain_2, lm_grain_3, lm_grain_4, lm_grain_5, show.header = TRUE, string.dv = "GRAIN", p.numeric = FALSE, show.ci = FALSE, digits.est = 4, digits.ci = 4)
+
+lm_yucca_1 <- lm(income ~ complier + age + education + capital + land, data = subset_nic_rct_7)
+lm_yucca_2 <- lm(income ~ complier + education + capital + land, data = subset_nic_rct_7)
+lm_yucca_3 <- lm(income ~ complier + age + capital + land, data = subset_nic_rct_7)
+lm_yucca_4 <- lm(income ~ complier + age + education + land, data = subset_nic_rct_7)
+lm_yucca_5 <- lm(income ~ complier + age + education + capital, data = subset_nic_rct_7)
+
+sjt.lm(lm_yucca_1, lm_yucca_2, lm_yucca_3, lm_yucca_4, lm_yucca_5, show.header = TRUE, string.dv = "YUCCA", p.numeric = FALSE, show.ci = FALSE, digits.est = 4, digits.ci = 4)
 
 ```
+For yucca, omitting capital and land have the largest effects on the treatment coefficient. For grain, omitting education has the largest effect, followed by omitting capital and then land. For cattle, omitting land has a tremendous effect, tripling the coefficient on treatment. We note that cattle also has the largest number of observations - thus while land is not the largest contributor to selection bias for all types of farms, it has a huge effect for cattle ranchers, which form a majority of the observations. This is indeed consistent with what we have found in previous problems, that omitting land from the regression contributes to selection bias, yet here we see this is most problematic for cattle ranchers. 
 
 ##8
 ````{r q_8, include=FALSE, message = FALSE, warning = FALSE}
