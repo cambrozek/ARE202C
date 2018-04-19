@@ -41,9 +41,9 @@ output_3 <- lm(complier ~ age + education + capital + land + j2 + j3, data=subse
 
 q2 <- sjt.lm(output_3, digits.est = 4, digits.ci = 4)
 ```
-A linear probability model for treatment (conditioning the data on $assign_i=1$, we regress complier on age, education, capital, land, job 2, and job 3). Each coefficient in this regression represents the marginal effect of that variable on the probability that $complier_i=1$. Thus for a positive coefficient there is evidence that, for example, as age increases, the probability of compliance being 1 increases.
+We run a linear probability model for treatment, conditioning the data on $assign_i=1$, we regress complier on age, education, capital, land, job 2, and job 3. Each coefficient in this regression represents the marginal effect of that variable on the probability that $complier_i=1$. Thus for a positive coefficient there is evidence that, for example, as age increases, the probability of compliance being 1 increases.
 
-The results of this regression indicate that none of the variables significantly influence compliance except for land. While the magnitude of effect is still small, it is significantly non-zero and positive. This is evidence that larger land holders are more likely to request treatment.
+The results of this regression indicate that none of the variables significantly influence compliance except for land. While the magnitude of the land effect is still small, it is significantly non-zero and positive. This is evidence that larger land holders are more likely to request treatment.
 
 `r q2`
 
@@ -91,7 +91,7 @@ q6 <- sjt.lm(output_7, output_8, robust = TRUE, p.numeric = TRUE)
 
 xtabs(land~job,nic_rct)
 ```
-Results from these models show that there is a small but significant negative effect of increasing land holdings on participation in treatment conditional on being a yuca or grain farmer (relative to cattle farmers). However, being a grain farmer *increases* likelihood of participation. As noted before, there is a small, significant positive effect of land holdings on participation.
+Results from these models show that there is a small but significant negative effect of increasing land holdings on participation in treatment conditional on being a yucca or grain farmer (relative to cattle farmers). However, being a grain farmer *increases* likelihood of participation. As noted before, there is a small, significant positive effect of land holdings on participation.
 
 The results lead us to believe that the land holding effects are driven by cattle farmers. Indeed, rerunning the results with grain farmers as the reference group rather than cattle farmers, we find that the land effect goes away and instead being a cattle farmer substantially decreases the likelihood of participation; however, conditional on being a cattle farmer, increasing land holdings further increases participation.
 
@@ -171,7 +171,7 @@ Our matching estimates of ATT vary across farm type but within farm type are mor
 
 
 ### (B)
-As the number of nearest neighbors increases, our point estimates of ATT increase away from the benchmark ATT estimates for the models "land education capital", "land age capital", and "lace age capital education" (the change is less systematic for the models "land age education" and "age capital education"). However, we find evidence for a tradeoff between bias and precision, since the estimated standard errors of those point estimates decreases substantially as the number of nearest neighbors increases.
+As the number of nearest neighbors increases, our point estimates of ATT increase away from the benchmark ATT estimates for the models "land education capital", "land age capital", and "land age capital education" (the change is less systematic for the models "land age education" and "age capital education"). However, we find evidence for a tradeoff between bias and precision, since the estimated standard errors of those point estimates decreases substantially as the number of nearest neighbors increases.
 
 ### (C)
 The ATT is systematically higher than the ATE; this is likely due to the positive selection effect mentioned earlier in the problem set. Those individuals who choose to receive treatment have characteristics (like larger land holdings, or being a cattle farmer) that correspond with them receiving higher returns from the treatment than indivduals who do not choose to receive treatment, even if assigned to treatment. 
