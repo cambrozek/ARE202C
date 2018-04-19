@@ -579,7 +579,7 @@ R<sup>2</sup> / adj. R<sup>2</sup>
 </div>
 <div id="section-2" class="section level2">
 <h2>3</h2>
-<p>Again we find that land is the only variable with a significant effect on request for treatment. When we add a square term for land, both land terms lose significance. Adding higher exponential terms improves the linearity between land and compliance and also returns significance to the linear land term. This indicates that under the probit model there does not appear to be a strictly linear relationship between land size and likelihood of compliance, particularly for large landholders, for whom likelihood of compliance is especially high.</p>
+<p>Again we find that land is the only variable with a significant effect on request for treatment. Notice that this is a probit model, wherein the model is fitting the data to a non-linear cumulative distribution function. Thus the probit coefficients don’t have clear interpretations as marginal effects of right hand side variables on probability of compliance as in the linear model, so we can’t interpret the same way we did in 2.</p>
 </div>
 <div id="section-3" class="section level2">
 <h2>4</h2>
@@ -587,26 +587,16 @@ R<sup>2</sup> / adj. R<sup>2</sup>
 </div>
 <div id="section-4" class="section level2">
 <h2>5</h2>
+<p>Positing that land is the source of positive selection bias indicates the covariance of land and income would be positive - that is, we expect individuals with larger land holdings to also have higher income, and thus if larger land holding is correlated with request for treatment, we have a larger likelihood of treated individuals to have higher income ex ante, which biases our question of how treatment affects income. Looking at the data we see that in fact the correlation (and thus covariance) is positive, 0.5534547.</p>
 </div>
 <div id="section-5" class="section level2">
 <h2>6</h2>
 <p>Results from these models show that there is a small but significant negative effect of increasing land holdings on participation in treatment conditional on being a yuca or grain farmer (relative to cattle farmers). However, being a grain farmer <em>increases</em> likelihood of participation. As noted before, there is a small, significant positive effect of land holdings on participation.</p>
-<p>The results lead us to believe that the land holding effects are driven by cattle farmers. Indeed, rerunning the results with grain farmers as the reference group rather than cattle farmers, we find</p>
+<p>The results lead us to believe that the land holding effects are driven by cattle farmers. Indeed, rerunning the results with grain farmers as the reference group rather than cattle farmers, we find that the land effect goes away and instead being a cattle farmer substantially decreases the likelihood of participation; however, conditional on being a cattle farmer, increasing land holdings further increases participation.</p>
+<p>So we find some evidence of heterogeneity in the pattern of selection - probability of compliance moves in different directions as land holdings increase conditional on farmer type.</p>
 <table style="border-collapse:collapse; border:none;border-bottom:double;">
 <td style="padding:0.2cm; border-top:double;">
  
-</td>
-<td style="border-bottom:1px solid; padding-left:0.5em; padding-right:0.5em; border-top:double;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; border-bottom:1px solid; border-top:double;" colspan="3">
-complier
-</td>
-<td style="border-bottom:1px solid; padding-left:0.5em; padding-right:0.5em; border-top:double;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; border-bottom:1px solid; border-top:double;" colspan="3">
-complier
 </td>
 <td style="border-bottom:1px solid; padding-left:0.5em; padding-right:0.5em; border-top:double;">
  
@@ -624,30 +614,6 @@ complier
 <tr>
 <td style="padding:0.2cm; font-style:italic;">
  
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em; font-style:italic;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; font-style:italic; ">
-B
-</td>
-<td style="padding:0.2cm; text-align:center; font-style:italic; ">
-CI
-</td>
-<td style="padding:0.2cm; text-align:center; font-style:italic; ">
-p
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em; font-style:italic;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; font-style:italic; ">
-B
-</td>
-<td style="padding:0.2cm; text-align:center; font-style:italic; ">
-CI
-</td>
-<td style="padding:0.2cm; text-align:center; font-style:italic; ">
-p
 </td>
 <td style="padding-left:0.5em; padding-right:0.5em; font-style:italic;">
  
@@ -702,30 +668,6 @@ p
 <td style="padding:0.2cm; text-align:center; border-top:1px solid; ">
 .067
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em; border-top:1px solid; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; border-top:1px solid; ">
-0.74
-</td>
-<td style="padding:0.2cm; text-align:center; border-top:1px solid; ">
-0.41 – 1.07
-</td>
-<td style="padding:0.2cm; text-align:center; border-top:1px solid; ">
-&lt;.001
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em; border-top:1px solid; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; border-top:1px solid; ">
-0.63
-</td>
-<td style="padding:0.2cm; text-align:center; border-top:1px solid; ">
--0.25 – 1.51
-</td>
-<td style="padding:0.2cm; text-align:center; border-top:1px solid; ">
-.162
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left;">
@@ -754,30 +696,6 @@ age
 </td>
 <td style="padding:0.2cm; text-align:center; ">
 .993
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.112
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.02 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.117
 </td>
 </tr>
 <tr>
@@ -808,26 +726,6 @@ j2
 <td style="padding:0.2cm; text-align:center; ">
 .027
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left;">
@@ -856,30 +754,6 @@ j3
 </td>
 <td style="padding:0.2cm; text-align:center; ">
 .390
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.23
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.81 – 0.35
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.430
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.60
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--2.15 – 0.95
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.446
 </td>
 </tr>
 <tr>
@@ -910,30 +784,6 @@ education
 <td style="padding:0.2cm; text-align:center; ">
 .936
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01 – 0.03
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.250
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.03
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.02 – 0.08
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.247
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left;">
@@ -962,30 +812,6 @@ capital
 </td>
 <td style="padding:0.2cm; text-align:center; ">
 .167
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.451
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.438
 </td>
 </tr>
 <tr>
@@ -1016,30 +842,6 @@ land
 <td style="padding:0.2cm; text-align:center; ">
 &lt;.001
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.691
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01 – 0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.698
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left;">
@@ -1068,26 +870,6 @@ age:j2
 </td>
 <td style="padding:0.2cm; text-align:center; ">
 .203
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
 </td>
 </tr>
 <tr>
@@ -1118,30 +900,6 @@ age:j3
 <td style="padding:0.2cm; text-align:center; ">
 .939
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.301
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01 – 0.03
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.322
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left;">
@@ -1170,26 +928,6 @@ j2:education
 </td>
 <td style="padding:0.2cm; text-align:center; ">
 .362
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
 </td>
 </tr>
 <tr>
@@ -1220,30 +958,6 @@ j3:education
 <td style="padding:0.2cm; text-align:center; ">
 .359
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.02
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.04 – 0.08
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.478
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.06
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.13 – 0.24
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.554
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left;">
@@ -1272,26 +986,6 @@ j2:capital
 </td>
 <td style="padding:0.2cm; text-align:center; ">
 .138
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
 </td>
 </tr>
 <tr>
@@ -1322,30 +1016,6 @@ j3:capital
 <td style="padding:0.2cm; text-align:center; ">
 .941
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.243
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.249
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left;">
@@ -1374,26 +1044,6 @@ j2:land
 </td>
 <td style="padding:0.2cm; text-align:center; ">
 .003
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
 </td>
 </tr>
 <tr>
@@ -1424,291 +1074,10 @@ j3:land
 <td style="padding:0.2cm; text-align:center; ">
 .008
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01 – 0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.733
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.02 – 0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.745
-</td>
-</tr>
-<tr>
-<td style="padding:0.2cm; text-align:left;">
-j1
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.40
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.80 – -0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.049
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--1.22
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--2.31 – -0.14
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.027
-</td>
-</tr>
-<tr>
-<td style="padding:0.2cm; text-align:left;">
-age:j1
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.195
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01 – 0.03
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.203
-</td>
-</tr>
-<tr>
-<td style="padding:0.2cm; text-align:left;">
-j1:education
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.03 – 0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.380
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.03
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.09 – 0.03
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.362
-</td>
-</tr>
-<tr>
-<td style="padding:0.2cm; text-align:left;">
-j1:capital
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.164
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
--0.00 – 0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.138
-</td>
-</tr>
-<tr>
-<td style="padding:0.2cm; text-align:left;">
-j1:land
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding:0.2cm; text-align:center; ">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.00 – 0.01
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.024
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.02
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-0.01 – 0.03
-</td>
-<td style="padding:0.2cm; text-align:center; ">
-.003
-</td>
 </tr>
 <tr>
 <td style="padding:0.2cm; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;">
 Observations
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em; border-top:1px solid;">
- 
-</td>
-<td style="padding:0.2cm; padding-top:0.1cm; padding-bottom:0.1cm; text-align:center; border-top:1px solid;" colspan="3">
-845
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em; border-top:1px solid;">
- 
-</td>
-<td style="padding:0.2cm; padding-top:0.1cm; padding-bottom:0.1cm; text-align:center; border-top:1px solid;" colspan="3">
-845
 </td>
 <td style="padding-left:0.5em; padding-right:0.5em; border-top:1px solid;">
  
@@ -1739,26 +1108,27 @@ R<sup>2</sup> / adj. R<sup>2</sup>
 <td style="padding:0.2cm; text-align:center; padding-top:0.1cm; padding-bottom:0.1cm;" colspan="3">
 .084 / .114
 </td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; padding-top:0.1cm; padding-bottom:0.1cm;" colspan="3">
-.075 / .059
-</td>
-<td style="padding-left:0.5em; padding-right:0.5em;">
- 
-</td>
-<td style="padding:0.2cm; text-align:center; padding-top:0.1cm; padding-bottom:0.1cm;" colspan="3">
-.084 / .114
-</td>
 </tr>
 </table>
 </div>
 <div id="section-6" class="section level2">
 <h2>7</h2>
+<p>For yucca, omitting capital and land have the largest effects on the treatment coefficient. For grain, omitting education has the largest effect, followed by omitting capital and then land. For cattle, omitting land has a tremendous effect, tripling the coefficient on treatment. We note that cattle also has the largest number of observations - thus while land is not the largest contributor to selection bias for all types of farms, it has a huge effect for cattle ranchers, which form a majority of the observations. This is indeed consistent with what we have found in previous problems, that omitting land from the regression contributes to selection bias, yet here we see this is most problematic for cattle ranchers.</p>
 </div>
 <div id="section-7" class="section level2">
 <h2>8</h2>
+<div id="a" class="section level3">
+<h3>(A)</h3>
+<p>Our matching estimates of ATT vary across farm type but within farm type are more or less robust to systematic exclusion of controls with the exception of land for cattles farmers, for whom the estimate of ATT drops from about 700 to 1308. This is consistent from findings from question 6 in which we found that land holds effects on likelihood of treatment were mostly driven by cattle farmers.</p>
+</div>
+<div id="b" class="section level3">
+<h3>(B)</h3>
+<p>As the number of nearest neighbors increases, our point estimates of ATT increase away from the benchmark ATT estimates for the models “land education capital”, “land age capital”, and “land age capital education” (the change is less systematic for the models “land age education” and “age capital education”). However, we find evidence for a tradeoff between bias and precision, since the estimated standard errors of those point estimates decreases substantially as the number of nearest neighbors increases.</p>
+</div>
+<div id="c" class="section level3">
+<h3>(C)</h3>
+<p>The ATT is systematically higher than the ATE; this is likely due to the positive selection effect mentioned earlier in the problem set. Those individuals who choose to receive treatment have characteristics (like larger land holdings, or being a cattle farmer) that correspond with them receiving higher returns from the treatment than indivduals who do not choose to receive treatment, even if assigned to treatment.</p>
+</div>
 </div>
 
 
