@@ -36,9 +36,20 @@ The value of the estimator $\hat{\delta}$ is `r delta_hat`. The expectation of $
 
 ## 2
 ```{r q_2, include=FALSE, message= FALSE}
-
+eq_reduced_form <- income ~ assign
+eq_first_stage <- treat ~ assign
+eq_system <- list(reduced_form = eq_reduced_form, first_stage = eq_first_stage )
+IV_SUR <- systemfit(eq_system, method = "SUR", data = nic_rct)
+summary(fitsur)
 ```
-In order for $assign_i$ to serve as a valid instrument for $treat_i$, 
+In order for $assign_i$ to serve as a valid instrument for $treat_i$ (allowing us to use the Wald IV estimator to recover the ATT), we require four assumptions:
+- Constant treatment effects
+- $cov(treat_i, assign_i) \neq 0$
+- $E[\epsilon_i | assign_i] = 0$
+
+$\hat{\delta}$ is an example of a Wald IV estimator; with assignment as an instrument for treatment, we take the ratio of the coefficient from a regression of income on assignment to the coefficient of a regression of treatment on assignment.
+
+Using seemingly unrelated regressions to estimate the system of simultaneous equations $income_i = \gamma + \beta^{ITT}\cdot assign_i +\epsilon_i$ and $treat_i = \lambda + \mu \cdot assign_i + \nu_i$ we can recover $\hat{\delta} = \frac{\beta^{ITT}}{\mu}$ with consistent standard error estimates despite the fact that there may be correlation across the disturbance terms $\epsilon_i$ and $\nu_i$. Notice that using seemingly unrelated regressions is an acceptable method since we assume that assignment is uncorrelated with all error terms (randomization was successful).
 
 ##3
 ```{r q_3, include=FALSE, message= FALSE, warning = FALSE}
