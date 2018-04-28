@@ -1,7 +1,7 @@
 ---
 title: "ARE 202C PS2"
 author: "Charlotte Ambrozek and Emily McGlynn"
-date: "April 17, 2018"
+date: "April 30, 2018"
 output: html_document
 ---
 
@@ -44,46 +44,57 @@ IVSUR_sum <- summary(IVSUR)
 beta <- IVSUR_sum$coefficients[2]
 mu <- IVSUR_sum$coefficients[4]
 delta_hat_2 <- beta/mu
-vcov <- IVSUR_sum$residCovEst[]
-g <- as.vector(seq(1/mu, 1/beta))
-### The jacobian of the transformation beta/mu is (1/mu, 1/beta)
+vcov <- IVSUR_sum$coefCov[]
+g <- as.vector(c(0, -beta*(mu^(-2)), 0, 1/mu))
+### The jacobian of the transformation beta/mu is (0, 1/mu, 0, -beta/(mu^2))
 #### Do delta method
 dm <- (t(g)%*%solve(vcov)%*%g)^(0.5)
 ```
-In order for $assign_i$ to serve as a valid instrument for $treat_i$ (allowing us to use the Wald IV estimator to recover the ATT), we require four assumptions:
-- Constant treatment effects
-- $cov(treat_i, assign_i) \neq 0$
-- $E[\epsilon_i | assign_i] = 0$
+In order for $assign_i$ to serve as a valid instrument for $treat_i$ (allowing us to use the Wald IV estimator to recover the ATT), we require three assumptions:
+
+1. Constant treatment effects
+
+2. $cov(treat_i, assign_i) \neq 0$
+
+3. $E[\epsilon_i | assign_i] = 0$
 
 $\hat{\delta}$ is an example of a Wald IV estimator; with assignment as an instrument for treatment, we take the ratio of the coefficient from a regression of income on assignment to the coefficient of a regression of treatment on assignment.
 
-Using seemingly unrelated regressions to estimate the system of simultaneous equations $income_i = \gamma + \beta^{ITT}\cdot assign_i +\epsilon_i$ and $treat_i = \lambda + \mu \cdot assign_i + \nu_i$ we can recover $\hat{\delta} = \frac{\beta^{ITT}}{\mu}$ with consistent standard error estimates despite the fact that there may be correlation across the disturbance terms $\epsilon_i$ and $\nu_i$. Notice that using seemingly unrelated regressions is an acceptable method since we assume that assignment is uncorrelated with all error terms (randomization was successful). We obtain a point estimate of `delta_hat_2` for $\hat{\delta}$ with an estimated standard error of `dm`.
+Using seemingly unrelated regressions to estimate the system of simultaneous equations $income_i = \gamma + \beta^{ITT}\cdot assign_i +\epsilon_i$ and $treat_i = \lambda + \mu \cdot assign_i + \nu_i$ we can recover $\hat{\delta} = \frac{\beta^{ITT}}{\mu}$ with consistent standard error estimates despite the fact that there may be correlation across the disturbance terms $\epsilon_i$ and $\nu_i$. Notice that using seemingly unrelated regressions is an acceptable method since we assume that assignment is uncorrelated with all error terms (randomization was successful). We obtain a point estimate of `r delta_hat_2` for $\hat{\delta}$ with an estimated standard error of `r dm`.
 
-##3
+## 3
 ```{r q_3, include=FALSE, message= FALSE, warning = FALSE}
 att_reg_assign <- lm(income ~ treat, data = subset_nic_rct)
 beta_hat_att_assign <- att_reg_assign$coefficients[2]
 ```
 The estimate of $\hat{\beta}^{ATT}$ from the set of all complying households was 532.52; the estimate of $\hat{\beta}^{ATT}$ from the set of all assigned households was 925.69. We find that $\hat{\delta}$ is closer to the estimate from the subset of compliers. We expect that to be the case because households that were assigned to treatment may or may not have taken up the treatment. Thus the estimate from the subset of assigned households still includes the bias from selection into treatment, whereas the estimate from the subset of complying households does not. Our instrument, if valid, controls for the endogeneity between treatment and income captured by selection.
 
-##4
+## 4
 ```{r q_4, include=FALSE, message= FALSE, warning = FALSE}
+first_stage <- lm(treat ~ assign, data = nic_rct)
+nic_rct <- mutate(nic_rct, treat_hat = fitted(first_stage))
+man_tsls <- summary(lm(income ~ treat_hat, data = nic_rct))
+beta_hat_man_tsls <- man_tsls$coefficients[2,1]
+se_man_tsls <- man_tsls$coefficients[2,2]
 
+tsls <- summary(systemfit(income~treat, method = "2SLS", inst = ~ assign, data = nic_rct))
+beta_hat_tsls <- tsls$coefficients[2,1]
+se_tsls <- tsls$coefficients[2,2]
 ```
 
-##5
+## 5
 
 ```{r q_5, include=FALSE, message= FALSE, warning = FALSE}
 
 ```
 
 
-##6
+## 6
 ````{r q_6, include=FALSE, message = FALSE}
 
 ```
 
-##7
+## 7
 ```{r q_7, include=FALSE, message = FALSE, warning = FALSE}
 
 
@@ -93,10 +104,4 @@ The estimate of $\hat{\beta}^{ATT}$ from the set of all complying households was
 
 
 ```{r junk, include=FALSE, message = FALSE, warning = FALSE}
-
-####subset_nic_rct_2 <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 = ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
-
-output_2 <- lm(income ~ j2+j3+tj1+tj2+tj3, data = subset_nic_rct_2)
-
-q1 <- sjt.lm(output_1, output_2, robust = TRUE)
 ```
