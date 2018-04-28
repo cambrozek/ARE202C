@@ -1,0 +1,82 @@
+---
+title: "ARE 202C PS2"
+author: "Charlotte Ambrozek and Emily McGlynn"
+date: "April 17, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE, message = FALSE}
+library(knitr)
+library(tidyverse)
+library(sjPlot)
+library(sem)
+### sem is for simultaneous equations, including 2SLS (command tsls)
+library(systemfit)
+### systemfit is also for simultaneous equations, but includes a SUR option
+### systemfit seems to have more rigorous documentation behind it (i.e. pubs in journal of statistical software), let's use that one
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## 1
+
+```{r q_1, include=FALSE, message= FALSE}
+nic_rct <- read_csv("U:/Courses/202C/PS2/Nicaragua_RCT.csv")
+
+itt_reg <- lm(income ~ assign, data = nic_rct)
+
+beta_hat_itt <- itt_reg$coefficients[2]
+
+subset_nic_rct <-  nic_rct[nic_rct$assign == 1,]
+
+cond_expect_treat <- mean(subset_nic_rct$treat)
+
+delta_hat <- beta_hat_itt/cond_expect_treat
+```
+The value of the estimator $\hat{\delta}$ is `r delta_hat`. The expectation of $\hat{\delta}$ is the average effect of treatment on the treated. If we assume constant treatment effects this is also the average treatment effect.
+
+## 2
+```{r q_2, include=FALSE, message= FALSE}
+
+```
+In order for $assign_i$ to serve as a valid instrument for $treat_i$, 
+
+##3
+```{r q_3, include=FALSE, message= FALSE, warning = FALSE}
+
+```
+
+
+##4
+```{r q_4, include=FALSE, message= FALSE, warning = FALSE}
+
+```
+
+##5
+
+```{r q_5, include=FALSE, message= FALSE, warning = FALSE}
+
+```
+
+
+##6
+````{r q_6, include=FALSE, message = FALSE}
+
+```
+
+##7
+```{r q_7, include=FALSE, message = FALSE, warning = FALSE}
+
+
+```
+
+
+
+
+```{r junk, include=FALSE, message = FALSE, warning = FALSE}
+
+####subset_nic_rct_2 <- mutate(subset_nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 = ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
+
+output_2 <- lm(income ~ j2+j3+tj1+tj2+tj3, data = subset_nic_rct_2)
+
+q1 <- sjt.lm(output_1, output_2, robust = TRUE)
+```
