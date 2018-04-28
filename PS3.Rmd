@@ -9,11 +9,11 @@ output: html_document
 library(knitr)
 library(tidyverse)
 library(sjPlot)
-library(sem)
-### sem is for simultaneous equations, including 2SLS (command tsls)
 library(systemfit)
 ### systemfit is also for simultaneous equations, but includes a SUR option
-### systemfit seems to have more rigorous documentation behind it (i.e. pubs in journal of statistical software), let's use that one
+### systemfit seems to have more rigorous documentation behind it (i.e. pubs in journal of statistical software), let's use that one (sem is also an option)
+library(alr3)
+### for delta method
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -36,11 +36,19 @@ The value of the estimator $\hat{\delta}$ is `r delta_hat`. The expectation of $
 
 ## 2
 ```{r q_2, include=FALSE, message= FALSE}
-eq_reduced_form <- income ~ assign
-eq_first_stage <- treat ~ assign
-eq_system <- list(reduced_form = eq_reduced_form, first_stage = eq_first_stage )
-IV_SUR <- systemfit(eq_system, method = "SUR", data = nic_rct)
-summary(fitsur)
+eqrf <- income ~ assign
+eqfs <- treat ~ assign
+syseq <- list(rf = eqrf, fs = eqfs)
+IVSUR <- systemfit(syseq, method = "SUR", data = nic_rct)
+IVSUR_sum <- summary(IVSUR)
+beta <- IVSUR_sum$coefficients[2]
+mu <- IVSUR_sum$coefficients[4]
+delta_hat_2 <- beta/mu
+vcov <- IVSUR_sum$residCovEst[]
+g <- as.vector(seq(1/mu, 1/beta))
+### The jacobian of the transformation beta/mu is (1/mu, 1/beta)
+#### Do delta method
+dm <- (t(g)%*%solve(vcov)%*%g)^(0.5)
 ```
 In order for $assign_i$ to serve as a valid instrument for $treat_i$ (allowing us to use the Wald IV estimator to recover the ATT), we require four assumptions:
 - Constant treatment effects
@@ -49,13 +57,14 @@ In order for $assign_i$ to serve as a valid instrument for $treat_i$ (allowing u
 
 $\hat{\delta}$ is an example of a Wald IV estimator; with assignment as an instrument for treatment, we take the ratio of the coefficient from a regression of income on assignment to the coefficient of a regression of treatment on assignment.
 
-Using seemingly unrelated regressions to estimate the system of simultaneous equations $income_i = \gamma + \beta^{ITT}\cdot assign_i +\epsilon_i$ and $treat_i = \lambda + \mu \cdot assign_i + \nu_i$ we can recover $\hat{\delta} = \frac{\beta^{ITT}}{\mu}$ with consistent standard error estimates despite the fact that there may be correlation across the disturbance terms $\epsilon_i$ and $\nu_i$. Notice that using seemingly unrelated regressions is an acceptable method since we assume that assignment is uncorrelated with all error terms (randomization was successful).
+Using seemingly unrelated regressions to estimate the system of simultaneous equations $income_i = \gamma + \beta^{ITT}\cdot assign_i +\epsilon_i$ and $treat_i = \lambda + \mu \cdot assign_i + \nu_i$ we can recover $\hat{\delta} = \frac{\beta^{ITT}}{\mu}$ with consistent standard error estimates despite the fact that there may be correlation across the disturbance terms $\epsilon_i$ and $\nu_i$. Notice that using seemingly unrelated regressions is an acceptable method since we assume that assignment is uncorrelated with all error terms (randomization was successful). We obtain a point estimate of `delta_hat_2` for $\hat{\delta}$ with an estimated standard error of `dm`.
 
 ##3
 ```{r q_3, include=FALSE, message= FALSE, warning = FALSE}
-
+att_reg_assign <- lm(income ~ treat, data = subset_nic_rct)
+beta_hat_att_assign <- att_reg_assign$coefficients[2]
 ```
-
+The estimate of $\hat{\beta}^{ATT}$ from the set of all complying households was 532.52; the estimate of $\hat{\beta}^{ATT}$ from the set of all assigned households was 925.69. We find that $\hat{\delta}$ is closer to the estimate from the subset of compliers. We expect that to be the case because households that were assigned to treatment may or may not have taken up the treatment. Thus the estimate from the subset of assigned households still includes the bias from selection into treatment, whereas the estimate from the subset of complying households does not. Our instrument, if valid, controls for the endogeneity between treatment and income captured by selection.
 
 ##4
 ```{r q_4, include=FALSE, message= FALSE, warning = FALSE}
