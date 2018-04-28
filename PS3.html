@@ -324,7 +324,7 @@ $(document).ready(function () {
 <li><p><span class="math inline">\(E[\epsilon_i | assign_i] = 0\)</span></p></li>
 </ol>
 <p><span class="math inline">\(\hat{\delta}\)</span> is an example of a Wald IV estimator; with assignment as an instrument for treatment, we take the ratio of the coefficient from a regression of income on assignment to the coefficient of a regression of treatment on assignment.</p>
-<p>Using seemingly unrelated regressions to estimate the system of simultaneous equations <span class="math inline">\(income_i = \gamma + \beta^{ITT}\cdot assign_i +\epsilon_i\)</span> and <span class="math inline">\(treat_i = \lambda + \mu \cdot assign_i + \nu_i\)</span> we can recover <span class="math inline">\(\hat{\delta} = \frac{\beta^{ITT}}{\mu}\)</span> with consistent standard error estimates despite the fact that there may be correlation across the disturbance terms <span class="math inline">\(\epsilon_i\)</span> and <span class="math inline">\(\nu_i\)</span>. Notice that using seemingly unrelated regressions is an acceptable method since we assume that assignment is uncorrelated with all error terms (randomization was successful). We obtain a point estimate of 446.6423948 for <span class="math inline">\(\hat{\delta}\)</span> with an estimated standard error of 2.0086344.</p>
+<p>Using seemingly unrelated regressions to estimate the system of simultaneous equations <span class="math inline">\(income_i = \gamma + \beta^{ITT}\cdot assign_i +\epsilon_i\)</span> and <span class="math inline">\(treat_i = \lambda + \mu \cdot assign_i + \nu_i\)</span> we can recover <span class="math inline">\(\hat{\delta} = \frac{\beta^{ITT}}{\mu}\)</span> with consistent standard error estimates despite the fact that there may be correlation across the disturbance terms <span class="math inline">\(\epsilon_i\)</span> and <span class="math inline">\(\nu_i\)</span>. Notice that using seemingly unrelated regressions is an acceptable method since we assume that assignment is uncorrelated with all error terms (randomization was successful). We obtain a point estimate of 446.6423948 for <span class="math inline">\(\hat{\delta}\)</span> with an estimated standard error of 144.2285328.</p>
 </section>
 <section id="section-2" class="level2">
 <h2>3</h2>
@@ -332,6 +332,8 @@ $(document).ready(function () {
 </section>
 <section id="section-3" class="level2">
 <h2>4</h2>
+<p>The point estimate for <span class="math inline">\(\hat{\beta}^{2sls}\)</span> is identical to the estimate of <span class="math inline">\(\hat{\delta}\)</span> from the above questions (446.6423948 all around); however the standard error from manual 2SLS is 192.5204593, which is larger than the s.e. estimate from the Wald IV estimator 144.2285328. This leads us to believe that manual 2SLS is <em>less</em> efficient than the Wald.</p>
+<p>The point estimate from pre-packaged 2SLS is still on point at 446.6423948. Now the standard error estimate is lower than from manual 2SLS, as expected, but still larger than the Wald estimate. Since we computed the Wald estimate by hand using the delta method, there is likely user error in the Wald estimator of the standard error<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 </section>
 <section id="section-4" class="level2">
 <h2>5</h2>
@@ -341,6 +343,12 @@ $(document).ready(function () {
 </section>
 <section id="section-6" class="level2">
 <h2>7</h2>
+</section>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Stata’s `<strong>nlcom</strong> command with the Wald gives essentially an identical estimator to the standard error from tinned 2SLS - however, pre- and post-multiplying what we believe to be the Jacobian of the transformation by the variance-covariance matrix of the Wald coefficients didn’t return the same thing. More insight about what Stata is doing better than us here would be helpful!<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
 </section>
 
 
