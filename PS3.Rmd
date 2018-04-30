@@ -94,15 +94,35 @@ The point estimate from pre-packaged 2SLS is still on point at `r beta_hat_tsls`
 ```
 
 ## 6
-````{r q_6, include=FALSE, message = FALSE}
+```{r q_6, include=FALSE, message = FALSE}
+install.packages("AER")
+library(AER)
+install.packages("stargazer")
+library(stargazer)
+nic_rct <- mutate(nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 = ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
+
+tsls_1 <- ivreg(income~treat|assign, data = nic_rct)
+tsls_2 <- ivreg(income~treat + age|assign + age, data = nic_rct) 
+tsls_3 <- ivreg(income~treat + age + capital |assign + age + capital, data = nic_rct)
+tsls_4 <- ivreg(income~treat + age + capital + education |assign + age + capital + education, data = nic_rct)
+tsls_5 <- ivreg(income~treat + age + capital + education + land|assign + age + capital + education + land, data = nic_rct)
+tsls_6 <- ivreg(income~treat + age + capital + education + land + j1 + j2 + j3|assign + age + capital + education + land + j1 + j2 + j3, data = nic_rct) 
+tsls_7 <- ivreg(income~treat + age + capital + education + land + j1 + j2 + j3 + tj1 + tj2 + tj3|assign + age + capital + education + land + j1 + j2 + j3 + tj1 + tj2 + tj3, data = nic_rct)
+
+stargazer(tsls_1, tsls_2, tsls_3, tsls_4, tsls_5, tsls_6, tsls_7, column.sep.width = ".25pt", omit = "Constant", omit.stat = "all")
 
 ```
+
+We find that as additional variables are included in the IV regression, the standard error of $\beta^{2sls}$ decreases, until the interaction terms between treatment and job type are included, then the point estimate of $\beta^{2sls}$ and the standard error sharply increases. Otherwise the estimate of treatment effect is fairly stable (the inclusion of land without the job dummies has the second largest effect on $\beta^{2sls}$, increasing the point estimate).
+
+When including the control variables, we should now interpret $\beta^{2sls}$ as the average treatment effect on treated farms (and assuming constant treatment effects across farms, the average treatment effect), but *given* a specific set of controls - thus it should be interpreted as $ATT_x$ or $ATE_x$.  
 
 ## 7
 ```{r q_7, include=FALSE, message = FALSE, warning = FALSE}
 
 
 ```
+$\beta^{2sls}$ will not be consistent for $\beta$ in this case because job type is controlled in both the first stage regression and in the main regression. Thus in the main regression $\beta^{2sls}$ will contain some information about the effect of job type on income, while the objective of the main regression is to identify the effect of treatment while holding job type constant. To isolate the effect of treatment holding job type constant, presumably it would make sense to either control for job type in either the first stage regression or second stage, but not both. 
 
 
 
