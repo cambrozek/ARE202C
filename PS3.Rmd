@@ -14,6 +14,10 @@ library(systemfit)
 ### systemfit seems to have more rigorous documentation behind it (i.e. pubs in journal of statistical software), let's use that one (sem is also an option)
 library(alr3)
 ### for delta method
+library(car)
+library(broom)
+library(AER)
+library(stargazer)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -95,10 +99,6 @@ The point estimate from pre-packaged 2SLS is still on point at `r beta_hat_tsls`
 
 ## 6
 ```{r q_6, include=FALSE, message = FALSE}
-install.packages("AER")
-library(AER)
-install.packages("stargazer")
-library(stargazer)
 nic_rct <- mutate(nic_rct, j1 = ifelse((job == 1),1,0), j2 = ifelse((job == 2),1,0), j3 = ifelse((job == 3),1,0), tj1 = (treat * j1), tj2 = (treat * j2), tj3 = (treat * j3))
 
 tsls_1 <- ivreg(income~treat|assign, data = nic_rct)
@@ -119,12 +119,23 @@ When including the control variables, we should now interpret $\beta^{2sls}$ as 
 
 ## 7
 ```{r q_7, include=FALSE, message = FALSE, warning = FALSE}
+nic_rct <- mutate(nic_rct, assign_grain_dum = as.numeric(assign == 1 & job ==2), assign_yuca_dum = as.numeric(assign == 1 & job == 3), grain_dum = as.numeric(job == 2), yuca_dum = as.numeric(job == 3))
 
+first_stage_7 <- lm(treat ~ assign + assign_grain_dum + assign_yuca_dum, data = nic_rct)
+first_stage_7_simple <- lm(treat ~ assign, data = nic_rct)
+s_fs_7 <- tidy(first_stage_7)
+s_fs_y_s <- tidy(first_stage_7_simple)
+nic_rct <- mutate(nic_rct, treat_hat_7 = fitted(first_stage_7))
+glance(first_stage_7)$statistic
+glance(first_stage_7_simple)$statistic
+man_tsls_7 <- summary(lm(income ~ treat_hat_7 + grain_dum + yuca_dum, data = nic_rct))
+beta_hat_man_tsls__7 <- man_tsls_7$coefficients[2,1]
+se_man_tsls_7 <- man_tsls_7$coefficients[2,2]
 
 ```
 $\beta^{2sls}$ will not be consistent for $\beta$ in this case because job type is controlled in both the first stage regression and in the main regression. Thus in the main regression $\beta^{2sls}$ will contain some information about the effect of job type on income, while the objective of the main regression is to identify the effect of treatment while holding job type constant. To isolate the effect of treatment holding job type constant, presumably it would make sense to either control for job type in either the first stage regression or second stage, but not both. 
 
-
+Charlotte's take: $\beta^{2sls}$ will be consistent for $\beta$; however, comparing the F statistics for the first stages, 
 
 
 ```{r junk, include=FALSE, message = FALSE, warning = FALSE}
