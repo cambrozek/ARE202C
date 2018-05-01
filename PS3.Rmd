@@ -93,9 +93,7 @@ The point estimate from pre-packaged 2SLS is still on point at `r beta_hat_tsls`
 
 ## 5
 
-```{r q_5, include=FALSE, message= FALSE, warning = FALSE}
-##Waiting on response from Kevin here
-```
+$\hat{\gamma}_1$ is not necessarily a consistent estimator of the averge effect of the treatment on the treated. Notice that in the first stage $treat_i = \pi_0 + \pi_1 \cdot assign_i + \mu_i$ we implicitly assume $E[\mu_i|treat_i] = 0$. However, since $land_i$ is not included in the this first stage we don't extend this assumption to $E[\mu_i|treat_i, land_i] = 0$. Also, we can't appeal to the LIE, since $E[\mu_i|treat_i] = 0$ does not imply anything about $E[\mu_i|treat_i, land_i]$. Thus in the second stage, $$income_i = \gamma_0 + \gamma_1 (\hat{\pi}_0 + \hat{\pi}_1 \cdot assign_i + \mu_i) + \gamma_2 \cdot land_i +\nu_i$$ $$ = (\gamma_0 + \gamma_1\hat{\pi}_0) + \gamma_1\hat{\pi}_1 \cdot assign_i + \gamma_2 \cdot land_i + \rho_i$$ where $\rho_i = \gamma_1\mu_i + \nu_i$. However, since $E[\rho_i | treat_i, land_i] = \gamma_1E[\mu_i | treat_i, land_i] \neq 0$ assuming $E[\nu_i|treat_i,land_i]= 0$, we don't have a consistent estimator. 
 
 ## 6
 ```{r q_6, include=FALSE, message = FALSE}
@@ -125,16 +123,16 @@ fs_7 <- lm(treat ~ assign + assign_grain_dum + assign_yuca_dum + j2 + j3, data =
 fs_7_s <- lm(treat ~ assign + j2 + j3, data = nic_rct)
 s_fs_7 <- tidy(fs_7)
 s_fs_7_s <- tidy(fs_7_s)
-nic_rct <- mutate(nic_rct, treat_hat_7 = fitted(first_stage_7))
-f_fs_7 <- glance(first_stage_7)$statistic
-f_fs_7_s <- glance(first_stage_7_simple)$statistic
+nic_rct <- mutate(nic_rct, treat_hat_7 = fitted(fs_7))
+f_fs_7 <- glance(fs_7)$statistic
+f_fs_7_s <- glance(fs_7_s)$statistic
 man_tsls_7 <- summary(lm(income ~ treat_hat_7 + grain_dum + yuca_dum, data = nic_rct))
 beta_hat_man_tsls__7 <- man_tsls_7$coefficients[2,1]
 se_man_tsls_7 <- man_tsls_7$coefficients[2,2]
 
 ## F test of multiple linear restrictions (RSS_R- RSS_U)*(n-k)/(p *RSS_U)
 
-lh <- linearHypothesis(first_stage_7,c("assign_grain_dum = 0", "assign_yuca_dum = 0"), test = "F")
+lh <- linearHypothesis(fs_7,c("assign_grain_dum = 0", "assign_yuca_dum = 0"), test = "F")
 p <- lh[2,6]
 f <- lh[2,5]
 ftest <- (((deviance(fs_7_s) - deviance(fs_7))/2)/ (deviance(fs_7)/1678))
@@ -143,7 +141,7 @@ ftest <- (((deviance(fs_7_s) - deviance(fs_7))/2)/ (deviance(fs_7)/1678))
 
 ```
 
-In this case, $\beta^{2sls}$ will be consistent for $\beta$; however, comparing the F statistics for the first stages, we notice that the F statistic drops from `r f_fs_7_S` to `r f_fs_7` when including the extra instruments. This, along with the high p-values on the extra instruments in the long first stage, tingles the spidy sense and leads us to believe that much of the variation in treatment the extra instruments are capturing  is actually noise. Conducting a F test for multiple linear restrictions, we find that we fail to reject the null that the coefficients on the extra instruments are jointly equal to zero (F statistic `r f`, p value `r p`). In this case we have weak instruments - the dummy variables for $assign_i*job_{2,i}$ and $ assign_i*job_{3,i}$ aren't covarying enough with treatment to make them valid instruments.
+In this case, $\beta^{2sls}$ will be consistent for $\beta$; however, comparing the F statistics for the first stages, we notice that the F statistic drops from `r f_fs_7_s` to `r f_fs_7` when including the extra instruments. This, along with the high p-values on the extra instruments in the long first stage, tingles the spidy sense and leads us to believe that much of the variation in treatment the extra instruments are capturing  is actually noise. Conducting a F test for multiple linear restrictions, we find that we fail to reject the null that the coefficients on the extra instruments are jointly equal to zero (F statistic `r f`, p value `r p`). In this case we have weak instruments - the dummy variables for $assign_i \cdot job_{2,i}$ and $assign_i \cdot job_{3,i}$ aren't covarying enough with treatment to make them valid instruments.
 
 
 ```{r junk, include=FALSE, message = FALSE, warning = FALSE}
